@@ -37,7 +37,7 @@ public class Player {
      */
     char teamSymbol;
     byte team;
-    CO currentCO;
+    public CO currentCO;
     CO tagCO;
     int funds;
     int days;

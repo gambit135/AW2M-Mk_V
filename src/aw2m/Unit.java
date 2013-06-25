@@ -87,7 +87,7 @@ public class Unit {
     /**
      * Player who controls this unit
      */
-    Player player;
+    public Player player;
     /**
      * Current fuel the unit carries. When a unit is created or replenished,
      * it's current fuel shall be equal to it's total fuel

@@ -5,7 +5,7 @@ package aw2m;
  *
  * @author Alejandro Téllez G. <java.util.fck@hotmail.com>
  */
-class CO {
+public class CO {
     //Classifiers
     //Commanding Officers
     //

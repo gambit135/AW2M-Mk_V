@@ -1,8 +1,10 @@
 package aw2m.alphabeta;
 
+import aw2m.CO;
 import aw2m.DijkstraElement;
 import aw2m.GridCell;
 import aw2m.Logic;
+import aw2m.Player;
 import aw2m.Terrain;
 import aw2m.Unit;
 import java.util.LinkedList;
@@ -47,6 +49,8 @@ public class Main {
         Unit u = new Unit();
         u.location = map[9][9];
         u.unitType = Unit.FIGHTER;
+        u.player = new Player();
+        u.player.currentCO = new CO(CO.ANDY);
 
         LinkedList<DijkstraElement> movementList = Logic.calculateMovementRadiusUsingAStar(u, map);
         System.out.println("movementList\n" + movementList);

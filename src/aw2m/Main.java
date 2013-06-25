@@ -73,14 +73,16 @@ public class Main {
         Unit u = new Unit();
         u.location = map[9][9];
         u.unitType = Unit.FIGHTER;
-        /*
-         if (u.location == null) {
-         System.out.println("location is null!");
-         }
-         else {
-         System.out.println("location is NOT null!");
-         }
-         * */
+        u.player = new Player();        
+        u.player.currentCO = new CO(CO.ANDY);
+
+        if (u.location == null) {
+            System.out.println("location is null!");
+        }
+        else {
+            System.out.println("location is NOT null!");
+        }
+
 
         //TEST FOR TERRAIN affecting movement
         map[6][9].terrain = Terrain.getWood();
@@ -88,14 +90,14 @@ public class Main {
         map[10][9].terrain = Terrain.getWood();
         map[12][9].terrain = Terrain.getWood();
 
-        
-         Set<GridCell> movementSet;
-         movementSet = new HashSet<GridCell>(Logic.calculateMovementRadius(u, map));
-         System.out.println("movementSet \n" + movementSet);
-         System.out.println("Iterations: " + Logic.iterations);
-         System.out.println("Set Size: " + movementSet.size());
 
-        
+        Set<GridCell> movementSet;
+        movementSet = new HashSet<GridCell>(Logic.calculateMovementRadius(u, map));
+        System.out.println("movementSet \n" + movementSet);
+        System.out.println("Iterations: " + Logic.iterations);
+        System.out.println("Set Size: " + movementSet.size());
+
+
         //movementSet = new HashSet<GridCell>(Logic.calculateMovementRadiusUsingAStar(u, map));
         int allIterations = 0;
         LinkedList<DijkstraElement> movementList = Logic.calculateMovementRadiusUsingAStar(u, map);
