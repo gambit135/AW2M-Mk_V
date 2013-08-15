@@ -1,5 +1,6 @@
 package aw2m.remote.creator;
 
+import aw2m.common.factory.UnitFactory;
 import aw2m.common.core.GridCell;
 import aw2m.common.core.Map;
 import aw2m.common.core.Player;

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -23,7 +22,7 @@ public class Logic {
     private static Set<GridCell> movementRadius;
     //private static LinkedList<GridCell> movementRadius;
     /**
-     * An area of the map, representing all the GridCell objects inside a
+     * An area of the map, representing some GridCell objects inside a
      * cross-like area
      */
     private static Set<GridCell> crossArea;

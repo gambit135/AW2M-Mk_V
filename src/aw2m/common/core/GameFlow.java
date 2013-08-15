@@ -1,6 +1,7 @@
 package aw2m.common.core;
 
 import aw2m.common.serialize.Deserialize;
+import aw2m.common.serialize.MakePostRequest;
 import aw2m.common.serialize.Serialize;
 import aw2m.remote.creator.maploader.MapCatalog;
 import aw2m.remote.creator.maploader.MapLoader;
@@ -39,6 +40,13 @@ public class GameFlow {
         System.out.println("Number of players on map: " + MapCatalog.getNoOfPlayers(mainGameInstance.mapChosen));
 
 
+        //BEGGINING OF TESTS
+        /*
+         * Data to be serialized:
+         * + Size X and Y of the map OR the predefined map chosen
+         * + Players, units, terrain
+         */
+
         //Testing Serialize
         Serialize s = new Serialize();
 
@@ -48,7 +56,8 @@ public class GameFlow {
 
         //Testing serialize terrain
         System.out.println("Serialized terrain");
-        System.out.println(s.serializeTerrain(mainGameInstance));
+        System.out.println(
+                s.serializeTerrain(mainGameInstance));
 
         //Testing serialize properties
         System.out.println("Serialized properties");
@@ -77,35 +86,100 @@ public class GameFlow {
         System.out.println(s.serializeUnits(mainGameInstance));
 
         //Testing deserialize
+
+
         Deserialize d = new Deserialize();
 
         //Testing deserealize players
         System.out.println("Deseralized players:");
-        d.deserializePlayers(s.serializePlayers(mainGameInstance));
+        Player[] players;
+        players = d.deserializePlayers(s.serializePlayers(mainGameInstance));
 
         //Testing deserealize terrain
         System.out.println("Deseralized terrain:");
-        d.deserializeTerrain(s.serializeTerrain(mainGameInstance), MapCatalog.getXsize(mainGameInstance.mapChosen), MapCatalog.getYsize(mainGameInstance.mapChosen));
+        GridCell[][] map = d.deserializeTerrain(
+                s.serializeTerrain(mainGameInstance),
+                (byte) mainGameInstance.map.length,
+                (byte) mainGameInstance.map[0].length);
 
         //Testing deserealize properties
         System.out.println("Deseralized properties:");
-        d.deserializeProperties(s.serializeProperties(mainGameInstance),
-                                d.deserializeTerrain(
-                s.serializeTerrain(mainGameInstance),
-                MapCatalog.getXsize(mainGameInstance.mapChosen),
-                MapCatalog.getYsize(mainGameInstance.mapChosen)),
-                                d.deserializePlayers(
-                s.serializePlayers(mainGameInstance)));
-
+        /*
+         d.deserializeProperties(s.serializeProperties(mainGameInstance),
+         d.deserializeTerrain(
+         s.serializeTerrain(mainGameInstance),
+         MapCatalog.getXsize(mainGameInstance.mapChosen),
+         MapCatalog.getYsize(mainGameInstance.mapChosen)),
+         d.deserializePlayers(
+         s.serializePlayers(mainGameInstance)));
+         */
+        d.deserializeProperties(s.serializeProperties(mainGameInstance), map, players);
         //Testing deserealize units
         System.out.println("Deserealized units:");
-        d.deserializeUnits(s.serializeUnits(mainGameInstance),
-                           d.deserializeTerrain(
-                s.serializeTerrain(mainGameInstance),
-                MapCatalog.getXsize(mainGameInstance.mapChosen),
-                MapCatalog.getYsize(mainGameInstance.mapChosen)),
-                           d.deserializePlayers(
-                s.serializePlayers(mainGameInstance)));
+        /*
+         d.deserializeUnits(s.serializeUnits(mainGameInstance),
+         d.deserializeTerrain(
+         s.serializeTerrain(mainGameInstance),
+         MapCatalog.getXsize(mainGameInstance.mapChosen),
+         MapCatalog.getYsize(mainGameInstance.mapChosen)),
+         d.deserializePlayers(
+         s.serializePlayers(mainGameInstance)));
+         */
+        d.deserializeUnits(s.serializeUnits(mainGameInstance), map, players);
+
+        //To proof the point: first, create a new instance of a game, with reconstructed info.
+
+        //Creating another instance of a game
+        GameInstance rebuiltGame = new GameInstance(players, map);
+
+        //Then, serialize the info contained in the rebuilt game.
+
+        //Testing serialize players
+        System.out.println("Serialized REBUILT players");
+        System.out.println(s.serializePlayers(rebuiltGame));
+
+        //Testing serialize terrain
+        System.out.println("Serialized REBUILT terrain");
+        System.out.println(s.serializeTerrain(rebuiltGame));
+
+        //Testing serialize properties
+        System.out.println("Serialized REBUILT properties");
+        System.out.println(s.serializeProperties(rebuiltGame));
+
+        //Testing serialize units
+        System.out.println("Serialized REBUILT units");
+        System.out.println(s.serializeUnits(rebuiltGame));
+
+        //A reconstructed game should also know who's turn it is to move.
+
+        System.out.println("TEST: Getting sizeX and sizeY only with GridCell[][]");
+        System.out.println("Size of map.length " + mainGameInstance.map.length);
+        System.out.println("Size of map[0].length " + mainGameInstance.map[0].length);
+
+        System.out.println("Size X of SPANN ISLAND is: " + MapCatalog.getXsize(mainGameInstance.mapChosen));
+        System.out.println("Size Y of SPANN ISLAND is: " + MapCatalog.getYsize(mainGameInstance.mapChosen));
+
+        //Testing booleans to String
+        boolean bulean = false;
+        System.out.println("Boolean value to String: " + bulean);
+        
+        
+        //First, deconstruct and reconstruct the game, calling the app on the cloud
+
+        //LAST CHANGE!:
+        //Create a new object for executing the HTTP POST request
+        MakePostRequest request = new MakePostRequest(mainGameInstance);
+        String result = request.executePostRequest();
+        System.out.println("THIS SHOULD PRINT THE RESPONSE BODY");
+        System.out.println(result);
+        
+        
+        //END OF TESTS
+
+        //Then, design the API for the UI
+
+        //A program is a flow...       
+        System.out.println("Is player " + mainGameInstance.currentPlayer.id + "'s turn to move");
 
     }
 }

@@ -56,7 +56,7 @@ public class Deserialize {
                         }
                         break;
                     case 1:
-                        if (!rawDSV.equals("null")) {
+                        if (!rawDSV.equals("n")) {
                             playerObject.teamSymbol = rawDSV;
                         }
                         else {
@@ -125,7 +125,6 @@ public class Deserialize {
                 if (terrainID >= 0 && terrainID <= 4) {
                     map[xIndex][yIndex].isProperty = true;
                     map[xIndex][yIndex].property = Property.getAbstractProperty(terrainID);
-
                 }
             }
         }

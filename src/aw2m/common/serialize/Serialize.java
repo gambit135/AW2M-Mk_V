@@ -4,7 +4,6 @@ import aw2m.common.core.GameInstance;
 import aw2m.common.core.GridCell;
 import aw2m.common.core.Player;
 import aw2m.common.core.Unit;
-import aw2m.remote.creator.maploader.MapCatalog;
 
 /**
  * This class provides methods for converting the entire state of the game into
@@ -42,7 +41,13 @@ public class Serialize {
                 s += "0";
             }
             s += ".";
-            s += p.teamSymbol;
+            if (p.teamSymbol == null) {
+                System.out.println("Player about to serialize has no team");
+                s += "n";
+            }
+            else {
+                s += p.teamSymbol;
+            }
             s += ".";
             s += p.currentCO.id;
             s += ".";
@@ -74,8 +79,8 @@ public class Serialize {
      */
     public String serializeTerrain(GameInstance game) {
         String terrain = "";
-        for (byte j = 0; j < MapCatalog.getYsize(game.mapChosen); j++) {
-            for (byte i = 0; i < MapCatalog.getXsize(game.mapChosen); i++) {
+        for (byte j = 0; j < game.map[0].length; j++) {
+            for (byte i = 0; i < (byte) game.map.length; i++) {
                 terrain += game.map[i][j].terrain.terrainType;
                 terrain += ",";
             }

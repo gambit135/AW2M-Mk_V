@@ -24,6 +24,10 @@ public class GameInstance {
     public Player players[];
     public byte weather;
     public byte currentWeather;
+    /**
+     * Appoints to a map chosen. If it equals MapCatalog.UNDEFINED, it is not a
+     * predefined map.
+     */
     public byte mapChosen;
     public GridCell[][] map;
 
@@ -35,6 +39,7 @@ public class GameInstance {
         //Setting number of players on the map
         this.numberOfPlayers = MapCatalog.getNoOfPlayers(mapChosen);
         //Initializing players
+        System.out.println("Default Constructor");
         System.out.println("Initializing players");
         //+1 cause of GAIA
         this.players = new Player[numberOfPlayers + 1];
@@ -58,10 +63,21 @@ public class GameInstance {
         //Map is ready to be played. Set first turn
         this.currentPlayer = players[1];
         this.currentPlayerID = 1;
-
         //Start playing
-        //Game.play();
-         
+        //Game.play();         
+    }
+
+    /**
+     * Creates a new GameInstance object, receiving player and map info as
+     * parameters. This metho is used when reconstructing a deserialized game.
+     *
+     * @param players
+     * @param map
+     */
+    public GameInstance(Player[] players, GridCell[][] map) {
+        System.out.println("Constructor used for rebuilding");
+        this.players = players;
+        this.map = map;
     }
 
     /**

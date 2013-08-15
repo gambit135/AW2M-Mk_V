@@ -36,9 +36,12 @@ public class Player {
     public byte id;
     /**
      * The team of the current player. It may (or may not) change during battle
-     * Only four teams supported: A, B, C, D. Hypothetically ,it may be able to
-     * support up to 255 teams, and a 0 team (no team). If guided by the char
-     * type restriction, it might be up to 65,536 teams.
+     * Only four teams supported: A, B, C, D. The string "n" means no team has
+     * been asigned to the player.
+     *
+     * Hypothetically ,it may be able to support up to 255 teams, and a 0 team
+     * (no team). If guided by the char type restriction, it might be up to
+     * 65,536 teams.
      */
     public String teamSymbol;
     byte team;
@@ -120,6 +123,7 @@ public class Player {
         this.hasSuperPowerOn = false;
         this.units = new LinkedList<Unit>();
         this.properties = new LinkedList<GridCell>();
+        this.teamSymbol = "n";
     }
 
     public void setAW2StandardRulesOnPlayer() {

@@ -12,7 +12,7 @@ public class DeployMenu {
     DeployMenu() {
     }
 
-    public byte printAW2BaseDeployMenu() {
+    public void printAW2BaseDeployMenu() {
         System.out.println("Printing base deploy menu");
         System.out.println("Choose an option");
         System.out.println("1. Infantry");
@@ -26,8 +26,12 @@ public class DeployMenu {
         System.out.println("9. Rockets");
         System.out.println("10. A-Air");
         System.out.println("11. Missiles");
+        System.out.println("\n");
+    }
 
+    public byte getOptionFromBaseMenu() {
         //Read input
+        System.out.print("Option: ");
         java.util.Scanner scanner = new java.util.Scanner(System.in);
         int option = scanner.nextByte();
 

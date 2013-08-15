@@ -1,4 +1,4 @@
-package aw2m.remote.creator;
+package aw2m.common.factory;
 
 import aw2m.common.core.GridCell;
 import aw2m.common.core.Player;
@@ -12,6 +12,16 @@ import aw2m.common.core.Unit;
  */
 public class UnitFactory {
 
+    /**
+     * Returns a new unit, belonging to the player passed as parameter, and
+     * located on the specified location.
+     *
+     * @param unitType The unit type to be built
+     * @param player   The player to which belongs this unit
+     * @param location The location on the map on where this unit will be
+     *                 deployed
+     * @return
+     */
     public static Unit getNewUnit(byte unitType, Player player, GridCell location) {
         Unit unit;
         if (Unit.getTotalAmmo(unitType) == -1) {

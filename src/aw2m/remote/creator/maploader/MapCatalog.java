@@ -7,6 +7,7 @@ package aw2m.remote.creator.maploader;
  */
 public class MapCatalog {
 
+    public static final byte UNDEFINED = -1;
     public static final byte SPANN_ISLAND = 0;
     public static final byte POINT_STORMY = 1;
 
