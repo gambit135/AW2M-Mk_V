@@ -2,6 +2,7 @@ package aw2m.common.serialize;
 
 import aw2m.common.core.GameInstance;
 import aw2m.remote.creator.maploader.MapCatalog;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -48,25 +49,27 @@ public class MakePostRequest {
         NameValuePair mapChosen;
         NameValuePair xSize;
         NameValuePair ySize;
+        NameValuePair terrainPair;
 
         Serialize s = new Serialize();
 
         NameValuePair isPredefinedPair = new NameValuePair("isPredefined", isPredefined + "");
         NameValuePair playersPair = new NameValuePair("players", s.serializePlayers(game));
         NameValuePair propertiesPair = new NameValuePair("properties", s.serializeProperties(game));
-        NameValuePair terrainPair = new NameValuePair("terrain", s.serializeTerrain(game));
+
         NameValuePair unitsPair = new NameValuePair("units", s.serializeUnits(game));
 
         //Assemble the QueryString
 
-        //If the map is predefined, just send mapChosen data, else, send X and Y coordinates.
+        //If the map is predefined, just send mapChosen data, else, send X and Y coordinates and the terrain.
         if (isPredefined) {
             mapChosen = new NameValuePair("mapChosen", game.mapChosen + "");
-            method.setQueryString(new NameValuePair[]{isPredefinedPair, mapChosen, playersPair, propertiesPair, terrainPair, unitsPair});
+            method.setQueryString(new NameValuePair[]{isPredefinedPair, mapChosen, playersPair, propertiesPair, unitsPair});
         }
         else {
             xSize = new NameValuePair("xSize", "" + game.map.length);
             ySize = new NameValuePair("ySize", "" + game.map[0].length);
+            terrainPair = new NameValuePair("terrain", s.serializeTerrain(game));
             method.setQueryString(new NameValuePair[]{isPredefinedPair, xSize, ySize, playersPair, propertiesPair, terrainPair, unitsPair});
         }
         responseBody = "";
@@ -84,8 +87,18 @@ public class MakePostRequest {
                     + HttpStatus.getStatusText(statusCode));
 
             responseBody = method.getResponseBodyAsString();
+
+            byte[] res = method.getResponseBody();
+            //Write output to a HTML file
+            FileOutputStream fos = new FileOutputStream("EndpointResponse.html");
+            fos.write(res);
+            fos.close();
         }
         catch (IOException ioe) {
+        }
+        finally {
+            //release connection
+            method.releaseConnection();
         }
         return responseBody;
     }
