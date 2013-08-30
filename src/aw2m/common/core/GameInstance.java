@@ -32,6 +32,12 @@ public class GameInstance {
     public GridCell[][] map;
 
     /**
+     * Default constructor. May be used during remote game reconstruction
+     */
+    public GameInstance() {
+    }
+
+    /**
      * GameInstance constructor takes as parameter a predefined map to load and
      * initializes players. Another constructor for not predefined maps should
      * be created.
@@ -72,7 +78,7 @@ public class GameInstance {
 
     /**
      * Creates a new GameInstance object, receiving player and map info as
-     * parameters. This metho is used when reconstructing a deserialized game.
+     * parameters. This method is used when reconstructing a deserialized game.
      *
      * @param players
      * @param map
