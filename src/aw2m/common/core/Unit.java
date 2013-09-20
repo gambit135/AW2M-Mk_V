@@ -811,13 +811,211 @@ public class Unit {
     }
 
     /**
+     * This method determines wether an attacking unit can use its primary or
+     * secondary weapon against a defending unit; returns true if the attacker
+     * can use its primary weapon, or false otherwise.
+     *
+     * Determining wether or not a primary weapon can be used depends on several
+     * factors:
+     *
+     * 1st: If the attacker can use the primary weapon against the defender by
+     * definition.
+     *
+     * 2nd: The ammunition on the attacker's primary weapon.
      *
      * @param attacker
      * @param Defender
      * @return
      */
-    public static boolean usesPrimaryWeapon(Unit attacker, Unit Defender) {
-
+    public static boolean canUsePrimaryWeapon(Unit attacker, Unit defender) {
+        if (attacker.currentAmmo <= 0) {
+            return false;
+        }
+        switch (attacker.unitType) {
+            case Unit.INFANTRY:
+                //Infantry units don't have primary weapon
+                return false;
+            case Unit.MECH:
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.RECON:
+                //Recons don't have primary weapon
+                return false;
+            case Unit.TANK:
+            case Unit.MD_TANK:
+            case Unit.NEOTANK:
+            case Unit.MEGATANK:
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.INFTRY_CLASS:
+                        return false;
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.CPTR_CLASS:
+                        return false;
+                    case Unit.PLANE_CLASS:
+                        return false;
+                    case Unit.SHIP_CLASS:
+                        return true;
+                    case Unit.SUB_CLASS:
+                        return true;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                }
+                break;
+            case Unit.APC:
+                //Apcs can't attack
+                return false;
+            case Unit.ARTILLERY:
+            case Unit.ROCKETS:
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.INFTRY_CLASS:
+                        return true;
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.CPTR_CLASS:
+                        return false;
+                    case Unit.PLANE_CLASS:
+                        return false;
+                    case Unit.SHIP_CLASS:
+                        return true;
+                    case Unit.SUB_CLASS:
+                        return true;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                }
+                break;
+            case Unit.ANTI_AIR:
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.INFTRY_CLASS:
+                        return true;
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.CPTR_CLASS:
+                        return true;
+                    case Unit.PLANE_CLASS:
+                        return true;
+                    case Unit.SHIP_CLASS:
+                        return false;
+                    case Unit.SUB_CLASS:
+                        return false;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                }
+                break;
+            case Unit.MISSILES:
+                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                    case Unit.AIR_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.PIPERUNNER:
+                //Piperunners can hit anything with its pipe cannon.
+                return true;
+            case Unit.FIGHTER:
+                //fighters can only attack air units
+                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                    case Unit.AIR_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.BOMBER:
+                //bombers can bomb down on anything but air units
+                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                    case Unit.AIR_CLASS:
+                        return false;
+                    default:
+                        return true;
+                }
+            case Unit.B_COPTER:
+                //B copters can hit other copters, vehicles, ships and subs.
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.INFTRY_CLASS:
+                        return false;
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.CPTR_CLASS:
+                        return true;
+                    case Unit.PLANE_CLASS:
+                        return false;
+                    case Unit.SHIP_CLASS:
+                        return true;
+                    case Unit.SUB_CLASS:
+                        return true;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                }
+                break;
+            case Unit.T_COPTER:
+                //transport copters can't attack
+                return false;
+            case Unit.STEALTH:
+                //Stealths can bomb anything with its omnimissile
+                return true;
+            case Unit.BLACK_BOMB:
+                //Black bombs are kamikaze units that damage enemy units around them
+                return false;
+            case Unit.BATTLESHIP:
+                //Battleship units can rain havoc amongst land and sea units
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.INFTRY_CLASS:
+                        return true;
+                    case Unit.VEH_CLASS:
+                        return true;
+                    case Unit.CPTR_CLASS:
+                        return false;
+                    case Unit.PLANE_CLASS:
+                        return false;
+                    case Unit.SHIP_CLASS:
+                        return true;
+                    case Unit.SUB_CLASS:
+                        return true;
+                    case Unit.BUILDING_CLASS:
+                        return true;
+                }
+                break;
+            case Unit.CRUISER:
+                //Cruiser can only use missiles against subs
+                switch (Unit.getUnitClass(defender.unitType)) {
+                    case Unit.SUB_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.LANDER:
+                //Landers can't attack
+                return false;
+            case Unit.SUB:
+                 //Subs only can attack ships and other subs
+                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                    case Unit.SEA_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.BLACK_BOAT:
+                return false;
+            case Unit.CARRIER:
+                 //Carriers are the missiles of the seas
+                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                    case Unit.AIR_CLASS:
+                        return true;
+                    default:
+                        return false;
+                }
+            case Unit.BUILDING:
+                return false;
+            case Unit.OOZIUM:
+                //Oozium doesnt have any weapons
+                return false;
+        }
         return false;
     }
 

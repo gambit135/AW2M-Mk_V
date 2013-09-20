@@ -5,6 +5,7 @@ import aw2m.common.serialize.MakePostRequest;
 import aw2m.common.serialize.Serialize;
 import aw2m.remote.creator.maploader.MapCatalog;
 import aw2m.remote.creator.maploader.MapLoader;
+import java.util.Date;
 
 /**
  * The main method of this class will host the mainGameInstance flow, with
@@ -65,6 +66,8 @@ public class GameFlow {
         System.out.println(s.serializeProperties(mainGameInstance));
 
         //Testing serialize units
+       
+        //One unit
         Unit u1 = new Unit();
         u1.location = mainGameInstance.map[9][9];
         u1.unitType = Unit.ROCKETS;
@@ -74,6 +77,7 @@ public class GameFlow {
         u1.currentAmmo = 4;
         mainGameInstance.players[1].units.add(u1);
 
+        //Another unit
         Unit u2 = new Unit();
         u2.location = mainGameInstance.map[8][4];
         u2.unitType = Unit.T_COPTER;
@@ -179,7 +183,17 @@ public class GameFlow {
         //LAST CHANGE!:
         //Create a new object for executing the HTTP POST request
         MakePostRequest request = new MakePostRequest(mainGameInstance);
+        
+        //Calculate time before executing request and after receiving a response.
+        Date timeBeforeRequest = new Date();
+        System.out.println("Time on client before request:" + timeBeforeRequest);
+        
         String result = request.executePostRequest();
+        
+        //Calculate time before executing request and after receiving a response.
+        Date timeAfterRequest = new Date();
+        System.out.println("Time on client after request:" + timeAfterRequest);
+        
         System.out.println("THIS SHOULD PRINT THE RESPONSE BODY");
         System.out.println(result);
 
