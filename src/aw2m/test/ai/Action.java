@@ -9,7 +9,7 @@ package aw2m.test.ai;
  */
 public class Action {
     /**
-     * The 
+     * The type of action, assuming there can be several types of actions
      */
     byte actionType;
 }

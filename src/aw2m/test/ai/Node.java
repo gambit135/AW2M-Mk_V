@@ -1,7 +1,7 @@
 package aw2m.test.ai;
 
 /**
- * A node is understood as 
+ * A node is understood as an element of a minimax search tree.
  *
  *
  * @author Alejandro Téllez G. <java.util.fck@hotmail.com>
@@ -23,15 +23,12 @@ public class Node {
     int childSecuenceNumber;
     /**
      * The max number of children this node can have. Consider storing the value
-     * by reference, encapsulated on anaother object, or as a static variable.
+     * by reference, encapsulated on another object, or as a static variable.
      */
     int maxNumberOfChildren;
     /**
-     * The type of movement or action this node represents. Note that some movement types
-     * are movement-sensitive: 
-     * 1.  
-     * 2.
-     * 3.
+     * The type of movement or action this node represents. Note that some
+     * movement types are movement-sensitive: 1. 2. 3.
      */
     byte movementType;
 }
