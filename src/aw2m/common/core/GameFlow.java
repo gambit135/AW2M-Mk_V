@@ -7,6 +7,7 @@ import aw2m.common.ai.model.Branch;
 import aw2m.common.serialize.Deserialize;
 import aw2m.common.serialize.MakePostRequest;
 import aw2m.common.serialize.Serialize;
+import aw2m.common.stats.Statistic;
 import aw2m.remote.creator.maploader.MapCatalog;
 import aw2m.remote.creator.maploader.MapLoader;
 import java.util.Date;
@@ -126,27 +127,27 @@ public class GameFlow {
 
         //Testing deserealize properties
         System.out.println("Deseralized properties:");
-        /*
-         d.deserializeProperties(s.serializeProperties(mainGameInstance),
-         d.deserializeTerrain(
-         s.serializeTerrain(mainGameInstance),
-         MapCatalog.getXsize(mainGameInstance.mapChosen),
-         MapCatalog.getYsize(mainGameInstance.mapChosen)),
-         d.deserializePlayers(
-         s.serializePlayers(mainGameInstance)));
-         */
+
+        d.deserializeProperties(s.serializeProperties(mainGameInstance),
+                                d.deserializeTerrain(
+                s.serializeTerrain(mainGameInstance),
+                MapCatalog.getXsize(mainGameInstance.mapChosen),
+                MapCatalog.getYsize(mainGameInstance.mapChosen)),
+                                d.deserializePlayers(
+                s.serializePlayers(mainGameInstance)));
+
         d.deserializeProperties(s.serializeProperties(mainGameInstance), map, players);
         //Testing deserealize units
         System.out.println("Deserealized units:");
-        /*
-         d.deserializeUnits(s.serializeUnits(mainGameInstance),
-         d.deserializeTerrain(
-         s.serializeTerrain(mainGameInstance),
-         MapCatalog.getXsize(mainGameInstance.mapChosen),
-         MapCatalog.getYsize(mainGameInstance.mapChosen)),
-         d.deserializePlayers(
-         s.serializePlayers(mainGameInstance)));
-         */
+
+        d.deserializeUnits(s.serializeUnits(mainGameInstance),
+                           d.deserializeTerrain(
+                s.serializeTerrain(mainGameInstance),
+                MapCatalog.getXsize(mainGameInstance.mapChosen),
+                MapCatalog.getYsize(mainGameInstance.mapChosen)),
+                           d.deserializePlayers(
+                s.serializePlayers(mainGameInstance)));
+
         d.deserializeUnits(s.serializeUnits(mainGameInstance), map, players);
 
         //To proof the point: first, create a new instance of a game, with reconstructed info.
@@ -254,7 +255,7 @@ public class GameFlow {
 
         //Team 1
         mainGameInstance.players[1].team = 1;
-        
+
         //CO is Andy
         TankP1.player.currentCO.id = CO.ANDY;
 
@@ -281,7 +282,7 @@ public class GameFlow {
         AAirP2.currentAmmo = Unit.getTotalAmmo(AAirP2.unitType);
         mainGameInstance.players[2].units.add(AAirP2);
         AAirP2.location.unit = AAirP2;
-        
+
         mainGameInstance.players[2].team = 2;
 
         //Testing 1st of 4 branches of search tree
@@ -295,16 +296,51 @@ public class GameFlow {
 
         //Evaluate 2nd generated node
         //GameFlow.batteryTest(BCptrP1, AAirP2);
-        
+
         //Search for optimal branch
         LinkedList<Unit> attackingUnits = new LinkedList<Unit>();
         attackingUnits.add(TankP1);
         attackingUnits.add(BCptrP1);
-        
+
         Search search = new Search(mainGameInstance.map);
+
         Branch branch = search.createBranchFromOptimalNodes(attackingUnits);
         branch.evalValue = BranchEvalFunctions.evalBranch(branch);
         System.out.println("Total branch eval value: " + branch.evalValue);
+        System.out.println("\n Total branches on Branch list: " + search.branches.size());
+        System.out.println("\nOptimal branch:" + search.findOptimalBranchFromBranches(search.branches).toString());
+
+        //Count properties
+        byte properties = 0;
+        byte x = 0, y = 0;
+        //Iterate throgh array without considering dimensions
+        for (GridCell gridRow[] : mainGameInstance.map) {
+            for (GridCell gridCell : gridRow) {
+                if (gridCell.isProperty) {
+                    properties++;
+                }
+                x++;
+            }
+            y++;
+        }
+        System.out.println("\nProperties:" + properties + "\n");
+
+
+        //Start estimations
+        //Statistic.estimate(ownUnits, enemyUnits, sizeX, sizeY, properties);
+        Statistic.estimate(50, 0, x, y, 48);
+        Statistic.estimate(1, 1, x, y, 48);
+        Statistic.estimate(2, 2, x, y, 48);
+        Statistic.estimate(40, 1, x, y, 48);
+        Statistic.estimate(1, 40, x, y, 48);
+        Statistic.estimate(50, 50, x, y, 48);
+        Statistic.estimate(100, 100, x, y, 48);
+        Statistic.estimate(500, 500, x, y, 48);
+        
+        System.out.println("\n\nNumber of clones generated: " + search.clonesGenerated);
+        System.out.println("\n\nNumber of nodes generated (all): " + search.clonesGenerated);
+        System.out.println("\n\nNumber of nodes on optimal Branch: " + search.optimalBranch.branch.size());
+
     }
 
     /**

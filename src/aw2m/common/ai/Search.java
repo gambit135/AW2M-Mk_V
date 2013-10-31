@@ -10,6 +10,7 @@ import aw2m.common.core.Unit;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  *
@@ -27,20 +28,26 @@ public class Search {
      * Stores all the branches, in aid for searching for the optimal branch.
      */
     public LinkedList<Branch> branches;
+    public int clonesGenerated;
+    public int nodesGenerated;
 
     /**
-     * It is assumed that the list received is the player's list of units.
+     * Creates Branch objets and stores them on this object's LinkedList<Branch>
+     * branches. A Branch object is composed by a list of combat Node objects,
+     * taking place in order as stored on such list. This method creates as many
+     * branches as attacking units, contained in the list sent as parameter. *
      *
      * @param playerUnits The units that the AI player can move
      */
     public Branch createBranchFromOptimalNodes(LinkedList<Unit> playerUnits) {
         //DEBUG
         System.out.println("on create branch from optimal nodes");
-        
+
         //Initialize "attackingList" with clones of playerUnits
         LinkedList<Unit> clonedAttackingUnits = new LinkedList<Unit>();
         for (Unit original : playerUnits) {
             clonedAttackingUnits.add(Unit.cloneUnit(original));
+            this.clonesGenerated++;
             //DEBUG
             System.out.println("Clone created from: " + original.toString());
         }
@@ -51,7 +58,7 @@ public class Search {
         int branchCurrentEvalValue = 0;
 
         //For each clone on the list
-        //An optimal branch is created for each iteration of fhis FOR statement
+        //An optimal branch is created for each iteration of this FOR statement
         //And a new set of Enemy clones is requiered to operate
         for (Unit clonedAttacker : clonedAttackingUnits) {
 
@@ -76,12 +83,14 @@ public class Search {
             for (GridCell gridRow[] : map) {
                 for (GridCell gridCell : gridRow) {
                     if (gridCell.unit != null) {
-                        Unit clonedEnemy = Unit.cloneUnit(gridCell.unit);
+
                         //If the team on the cell is different from the clone's
-                        if (clonedEnemy.player.team != clonedAttacker.player.team) {
+                        if (gridCell.unit.player.team != clonedAttacker.player.team) {
                             //Add it to the clone map
+                            Unit clonedEnemy = Unit.cloneUnit(gridCell.unit);
+                            this.clonesGenerated++;
                             clonedEnemyMap.put(gridCell, clonedEnemy);
-                            
+
                             //DEBUG
                             System.out.println("Cloned enemy: " + clonedEnemy.toString());
                         }
@@ -110,7 +119,8 @@ public class Search {
                                 //Use M-Coefficient
                                 short[] combatOutcome = Logic.combatSimulation(clonedAttacker, clonedDefender);
                                 short nodeEvalValue = NodeEvalFunctions.M_balanceCoefficient(clonedAttacker, clonedDefender, combatOutcome);
-
+                                this.nodesGenerated++;
+                                
                                 if (optimalNode == null) {
                                     //No other optimal candidate exists
                                     //Assign current value to optimal node
@@ -166,20 +176,18 @@ public class Search {
             Branch b = new Branch(branch);
             //Eval branch
             b.evalValue = BranchEvalFunctions.evalBranch(b);
-            
+
             //Add to branch list
             this.branches.add(b);
-            
+
             //DEBUG
             //Print branch
             System.out.println("Branch: ");
             System.out.println(b.toString());
-                        
+
             return b;
         }
         return null;
-
-
         //ALL OF THIS GOES IN OTHER METHOD
         //If the branch is not empty
         //  Eval the branch
@@ -200,13 +208,15 @@ public class Search {
 
     }
 
-    public Branch findOptimalBranchFromBranches(LinkedList<Branch> branches) {        
-        for (Branch b : branches){
-            if (this.optimalBranch == null){
+    public Branch findOptimalBranchFromBranches(LinkedList<Branch> branches) {
+        //First, create a branch from each attacking unit
+
+        for (Branch b : branches) {
+            if (this.optimalBranch == null) {
                 this.optimalBranch = b;
             }
-            else{
-                if (b.evalValue > optimalBranch.evalValue){
+            else {
+                if (b.evalValue > optimalBranch.evalValue) {
                     this.optimalBranch = b;
                 }
             }
@@ -218,8 +228,72 @@ public class Search {
         this.map = map;
         this.optimalBranch = null;
         this.branches = new LinkedList<Branch>();
-        
+
+        this.clonesGenerated = 0;
+        this.nodesGenerated = 0;
+
         //DEBUG
         System.out.println("Search CONSTRUCTOR");
+    }
+
+    public void createAllPossibleBranches(LinkedList<Unit> attackingUnits) {
+        //For each attacking unit, create a branch:
+        //And add it to this object's LinkedList<Branch> branches;
+
+        //This for is supposed to give all permutations possible for all starting 
+        //or ROOT units of a Branch
+        //Ergo, we must iterate through the attacking unit list, 
+        //to get all posible combinations of starting ROOT units.
+
+        //One solution could be storing them in a doubly linked list
+        //Set u as the starting element of the list.
+        //All elements after u come next to him in the list
+        //All elements before u come after that
+        if (attackingUnits.size() > 1) {
+            for (Unit u : attackingUnits) {
+                //Create "permutation" of units
+                LinkedList<Unit> units = new LinkedList<Unit>();
+                units.add(u);
+
+                //Get position of u
+                int index = attackingUnits.indexOf(u);
+
+                //Validate if index+1 is valid
+                if (index + 1 < attackingUnits.size()) {
+                    //Get an iterator
+                    ListIterator<Unit> iterator = attackingUnits.listIterator(index + 1);
+                    //Add all elements after u
+                    while (iterator.hasNext()) {
+                        units.add(iterator.next());
+                    }
+                    //Add elements before u
+                    iterator = attackingUnits.listIterator();
+                    int index2 = 0;
+                    while (iterator.hasNext()) {
+                        Unit temp = iterator.next();
+                        if (index2 < index) {
+                            units.add(temp);
+                            index2++;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    //The "permutation" has been generated.
+                    //Use it to generate its branch from optimal nodes
+                    //Call to createBranchFromOptimalNodes
+                    this.createBranchFromOptimalNodes(units);
+                }
+            }
+        }
+        else {
+            //Only one element exists on the attackingUnits list
+            //The only permutation is that element
+            //Get branch from this only permutation
+
+            //Also, this branch is the optimal branch
+            this.createAllPossibleBranches(attackingUnits);
+        }
+
     }
 }

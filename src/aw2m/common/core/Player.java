@@ -121,6 +121,7 @@ public class Player {
         this.hasNoPower = true;
         this.hasPowerOn = false;
         this.hasSuperPowerOn = false;
+        this.tagPower = false;
         this.units = new LinkedList<Unit>();
         this.properties = new LinkedList<GridCell>();
         //this.teamSymbol = "n";

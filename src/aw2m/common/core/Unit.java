@@ -71,8 +71,14 @@ public class Unit {
     public static final byte SUB = 22;
     public static final byte BLACK_BOAT = 23;
     public static final byte CARRIER = 24;
+    /**
+     * Secondary units.
+     */
     public static final byte BUILDING = 25;
     public static final byte OOZIUM = 26;
+    /**
+     * Primary Weapon.
+     */
     public static final byte PRIMARY_WEAPON = 2;
     public static final byte SECONDARY_WEAPON = 1;
     public static final byte CANT_ENGAGE = 0;
@@ -419,9 +425,8 @@ public class Unit {
      * @return
      */
     /*public static boolean canEngage(Unit attacker, Unit defender) {
-        return false;
-    }*/
-
+     return false;
+     }*/
     /**
      * Returns the weapon that the attacker can use against the defener, with
      * priority to its primary weapon; NOTE THAT the value returned by this
@@ -443,14 +448,36 @@ public class Unit {
             //If the attacker has ammo
             if (attacker.currentAmmo > 0) {
                 //test if it can attack with primary
-                if (Unit.canEngageUnitClassUsingPrimaryWeapon(attacker, defender)) {
+                if (Unit.canEngageUnitClassUsingPrimaryWeapon(attacker.unitType, defender.unitType)) {
                     return Unit.PRIMARY_WEAPON;
                 }
             }
             //At this point, it can't use primary, so try asking for secondary
-            if (Unit.canEngageUnitClassUsingSecondaryWeapon(attacker, defender)) {
+            if (Unit.canEngageUnitClassUsingSecondaryWeapon(attacker.unitType, defender.unitType)) {
                 return Unit.SECONDARY_WEAPON;
             }
+        }
+        //If it can't use either, it can't engage.
+        return Unit.CANT_ENGAGE;
+    }
+
+    /**
+     * Returns if an attacking unit can, hypothetically, engage an enemy
+     * defending unit.
+     *
+     * @param attacker
+     * @param defender
+     * @return
+     */
+    public static byte getEngagingWeapon(byte attacker, byte defender) {
+        //If the attacker has primary weapon
+        //test if it can attack with primary
+        if (Unit.canEngageUnitClassUsingPrimaryWeapon(attacker, defender)) {
+            return Unit.PRIMARY_WEAPON;
+        }
+        //At this point, it can't use primary, so try asking for secondary
+        if (Unit.canEngageUnitClassUsingSecondaryWeapon(attacker, defender)) {
+            return Unit.SECONDARY_WEAPON;
         }
         //If it can't use either, it can't engage.
         return Unit.CANT_ENGAGE;
@@ -468,14 +495,14 @@ public class Unit {
      * @return True if the attacking unit can engage the defender unit using its
      *         primary weapon. False otherwise.
      */
-    public static boolean canEngageUnitClassUsingPrimaryWeapon(Unit attacker, Unit defender) {
+    public static boolean canEngageUnitClassUsingPrimaryWeapon(byte attacker, byte defender) {
         //Switch to determine attacking unit class
-        switch (attacker.unitType) {
+        switch (attacker) {
             case Unit.INFANTRY:
                 //Infantry only use secondary weapon
                 return false;
             case Unit.MECH:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.VEH_CLASS:
                         return true;
                 }
@@ -487,7 +514,7 @@ public class Unit {
             case Unit.MD_TANK:
             case Unit.NEOTANK:
             case Unit.MEGATANK:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.VEH_CLASS:
                     case Unit.SUB_CLASS:
                     case Unit.SHIP_CLASS:
@@ -498,7 +525,7 @@ public class Unit {
                 //APC has no guns
                 return false;
             case Unit.ARTILLERY:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.SHIP_CLASS:
@@ -507,7 +534,7 @@ public class Unit {
                 }
                 return false;
             case Unit.ROCKETS:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.SHIP_CLASS:
@@ -516,7 +543,7 @@ public class Unit {
                 }
                 return false;
             case Unit.ANTI_AIR:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.CPTR_CLASS:
@@ -526,7 +553,7 @@ public class Unit {
                 return false;
             case Unit.MISSILES:
                 //Can only hit air units
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.CPTR_CLASS:
                     case Unit.PLANE_CLASS:
                         return true;
@@ -537,14 +564,14 @@ public class Unit {
                 return true;
             case Unit.FIGHTER:
                 //Fighters can only engage other air units
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.CPTR_CLASS:
                     case Unit.PLANE_CLASS:
                         return true;
                 }
                 return false;
             case Unit.BOMBER:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.SHIP_CLASS:
@@ -553,7 +580,7 @@ public class Unit {
                 }
                 return false;
             case Unit.B_COPTER:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.VEH_CLASS:
                     case Unit.SHIP_CLASS:
                     case Unit.SUB_CLASS:
@@ -571,14 +598,14 @@ public class Unit {
                 return false;
             case Unit.BATTLESHIP:
                 //Battleships can bomb on anything but air units
-                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                switch (Unit.getUnitSuperClass(defender)) {
                     case Unit.AIR_CLASS:
                         return false;
                 }
                 return true;
             case Unit.CRUISER:
                 //Cruisers can engage only subs with their torpedos
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.SUB_CLASS:
                         return true;
                 }
@@ -588,7 +615,7 @@ public class Unit {
                 return false;
             case Unit.SUB:
                 //Subs can only attack sea units
-                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                switch (Unit.getUnitSuperClass(defender)) {
                     case Unit.SEA_CLASS:
                         return true;
                 }
@@ -598,7 +625,7 @@ public class Unit {
                 return false;
             case Unit.CARRIER:
                 //Carriers can take down air units from the distance
-                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                switch (Unit.getUnitSuperClass(defender)) {
                     case Unit.AIR_CLASS:
                         return true;
                 }
@@ -622,9 +649,9 @@ public class Unit {
      * @return True if the attacking unit can engage the defender unit using its
      *         secondary weapon. False otherwise.
      */
-    public static boolean canEngageUnitClassUsingSecondaryWeapon(Unit attacker, Unit defender) {
+    public static boolean canEngageUnitClassUsingSecondaryWeapon(byte attacker, byte defender) {
         //Switch to determine attacking unit class
-        switch (attacker.unitType) {
+        switch (attacker) {
             //Infantry only can use its machine gun against other inftry, vehicles and copters.
             case Unit.INFANTRY:
             //Same as infantry for mechs
@@ -636,7 +663,7 @@ public class Unit {
             case Unit.MD_TANK:
             case Unit.NEOTANK:
             case Unit.MEGATANK:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.CPTR_CLASS:
@@ -657,7 +684,7 @@ public class Unit {
                 return false;
             //Same as inftry for copters
             case Unit.B_COPTER:
-                switch (Unit.getUnitClass(defender.unitType)) {
+                switch (Unit.getUnitClass(defender)) {
                     case Unit.INFTRY_CLASS:
                     case Unit.VEH_CLASS:
                     case Unit.CPTR_CLASS:
@@ -677,7 +704,7 @@ public class Unit {
                 return false;
             case Unit.CRUISER:
                 //Cruisers can engage air units with its machine guns
-                switch (Unit.getUnitSuperClass(defender.unitType)) {
+                switch (Unit.getUnitSuperClass(defender)) {
                     case Unit.AIR_CLASS:
                         return true;
                 }
@@ -2585,8 +2612,9 @@ public class Unit {
                 + " on " + u.location.terrain.name
                 + " @ (" + u.location.x + ", " + u.location.y + ")";
     }
+
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         return false;
     }
 }

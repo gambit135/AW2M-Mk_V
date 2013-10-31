@@ -407,7 +407,7 @@ public class Logic {
      * @return
      */
     public static Set<GridCell> getVNN(GridCell location, GridCell[][] map) {
-        HashSet set = new HashSet();
+        HashSet<GridCell> set = new HashSet<GridCell> ();
         //Check if up exists
         if (location.y > 0) {    //Not on the upper border of the map
             set.add(map[location.x][location.y - 1]);

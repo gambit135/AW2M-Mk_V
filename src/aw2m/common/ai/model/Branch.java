@@ -10,21 +10,25 @@ import java.util.LinkedList;
  * @date 14/10/2013 - 05:46:34 AM
  */
 public class Branch {
+
     public LinkedList<Node> branch;
     public int evalValue;
 
     public Branch(LinkedList<Node> Branch) {
         this.branch = Branch;
     }
+
     @Override
-    public String toString(){
+    public String toString() {
         String nodes = "";
-        for (Node n : this.branch){
+        for (Node n : this.branch) {
             nodes += n.toString();
-        }        
-        return "Branch: \n"
+        }
+        return "\nBranch: \n"
                 + "Optimal Nodes on Branch: \n"
-                + nodes;
+                + nodes + "\n"
+                + "Branch eval value: "
+                + this.evalValue
+                + "\n";
     }
-    
 }
