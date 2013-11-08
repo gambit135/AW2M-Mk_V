@@ -36,7 +36,7 @@ public class GameFlow {
         //First, an instance of GameInstance must be created
         //Specify which map to play
         System.out.println("Creating GameInstance");
-        mainGameInstance = new GameInstance(MapCatalog.SPANN_ISLAND);
+        mainGameInstance = new GameInstance(MapCatalog.POINT_STORMY);
         //Players are initialized
         //A map must be loaded unto that mainGameInstance
         System.out.println("Loading map");
